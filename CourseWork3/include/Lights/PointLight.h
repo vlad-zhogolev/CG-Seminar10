@@ -9,8 +9,13 @@
 class PointLight : public Light
 {
 public:
-    PointLight( glm::vec3 position, glm::vec3 color
-        , float constant, float linear, float quadratic);
+    PointLight(
+		glm::vec3 position, 
+		glm::vec3 color, 
+		float constant, 
+		float linear, 
+		float quadratic,
+		LightState state = LightState::On);
 
     glm::vec3 getPosition() { return _position; }
     float getConstant() { return _constant; }

@@ -4,8 +4,8 @@ using namespace std;
 
 SpotLight::SpotLight( glm::vec3 position, glm::vec3 color, glm::vec3 direction
     , float constant, float linear, float quadratic
-    , float cutOff, float outerCutOff)
-    : Light(color)
+    , float cutOff, float outerCutOff, LightState state)
+    : Light(color, state)
 {
     _position = position;
     _direction = direction;

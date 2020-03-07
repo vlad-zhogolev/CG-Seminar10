@@ -8,7 +8,7 @@ class SpotLight : public Light
 public:
     SpotLight( glm::vec3 position, glm::vec3 color, glm::vec3 direction
         , float constant, float linear, float quadratic
-        , float cutOff, float outerCutOff);   
+        , float cutOff, float outerCutOff, LightState state = LightState::On);   
     
     glm::vec3 getPosition() { return _position; }    
     glm::vec3 getDirection() { return _direction; }

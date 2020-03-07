@@ -1,6 +1,7 @@
 #version 330 core
 
-struct PointLight {
+struct PointLight 
+{
     vec3 position;
     vec3 color;  
     bool isOn; 
@@ -10,13 +11,15 @@ struct PointLight {
     float quadratic;    
 };
 
-struct DirLight {
+struct DirLight 
+{
     vec3 direction;
     vec3 color;
     bool isOn;
 };
 
-struct SpotLight{
+struct SpotLight
+{
     vec3 position;
     vec3 direction;
     vec3 color;
@@ -30,7 +33,8 @@ struct SpotLight{
     float outerCutOff;
 };
 
-struct Material {        
+struct Material 
+{        
     vec3 albedo;
     vec3 normal;    
     float metallic;
@@ -62,6 +66,7 @@ uniform vec3 cameraPos;
 
 uniform samplerCube skybox;
 
+uniform DirLight sun;
 uniform int dirLightsNumber;
 uniform DirLight dirLights[MAX_DIR_LIGHTS_NUMBER];
 uniform int pointLightsNumber;
@@ -85,7 +90,7 @@ vec3 getNormalFromMap()
 
     return normalize(TBN * tangentNormal);
 }
-// ----------------------------------------------------------------------------
+
 float distributionGGX(vec3 N, vec3 H, float roughness)
 {
     float a = roughness * roughness;
@@ -99,7 +104,7 @@ float distributionGGX(vec3 N, vec3 H, float roughness)
 
     return nom / denom;
 }
-// ----------------------------------------------------------------------------
+
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
     float r = (roughness + 1.0);
@@ -110,7 +115,7 @@ float GeometrySchlickGGX(float NdotV, float roughness)
 
     return nom / denom;
 }
-// ----------------------------------------------------------------------------
+
 float geometrySmith(vec3 N, vec3 directionToView, vec3 L, float roughness)
 {
     float NdotV = max(dot(N, directionToView), 0.0);
@@ -121,12 +126,12 @@ float geometrySmith(vec3 N, vec3 directionToView, vec3 L, float roughness)
 
     return ggx1 * ggx2;
 }
-// ----------------------------------------------------------------------------
+
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
-// ----------------------------------------------------------------------------
+
 vec3 calcPointLight(PointLight light, Material material, vec3 fragmentPositon, vec3 directionToView, vec3 F0)
 {  
     vec3 directionToLight = normalize(light.position - fragmentPositon);
@@ -153,7 +158,7 @@ vec3 calcPointLight(PointLight light, Material material, vec3 fragmentPositon, v
     // scale light by NdotL add to outgoing radiance Lo 
     return (kD * material.albedo / PI + specular) *  light.color * attenuation * NdotL;
 }
-// ----------------------------------------------------------------------------
+
 vec3 calcDirLight(DirLight light, Material material, vec3 directionToView, vec3 F0)
 {   
     vec3 halfway = normalize(directionToView - light.direction);
@@ -176,7 +181,7 @@ vec3 calcDirLight(DirLight light, Material material, vec3 directionToView, vec3 
     // scale light by NdotL add to outgoing radiance Lo 
     return (kD * material.albedo / PI + specular) * light.color * NdotL;      
 }
-// ----------------------------------------------------------------------------
+
 vec3 calcSpotLight(SpotLight light, Material material, vec3 fragmentPositon, vec3 directionToView, vec3 F0)
 {
     vec3 directionToLight = normalize(light.position - fragmentPositon);
@@ -210,7 +215,7 @@ vec3 calcSpotLight(SpotLight light, Material material, vec3 fragmentPositon, vec
     // scale light by NdotL add to outgoing radiance Lo 
     return (kD * material.albedo / PI + specular) * intensity * light.color * NdotL;
 }
-// ----------------------------------------------------------------------------
+
 void main()
 {		
     Material material;
@@ -227,7 +232,7 @@ void main()
     F0 = mix(F0, material.albedo, material.metallic);
 
     // reflectance equation
-    vec3 Lo = vec3(0.0);
+    vec3 Lo = calcDirLight(sun, material, directionToView, F0);
     for(int i = 0; i < pointLightsNumber; ++i)
     {
         if (pointLights[i].isOn)

@@ -58,6 +58,7 @@ const DirectionalLights::size_type  MAX_NUMBER_OF_DIRECTIONAL_LIGHTS    = 4;
 const unsigned int                  SKYBOX_TEXTURE_INDEX                = 15;
 
 // Scene contents
+DirectionalLight sun(glm::vec3(0, -1, 0), glm::vec3(0.98, 0.831, 0.25));
 DirectionalLights dirLights;
 PointLights pointLights;
 SpotLights spotLights;
@@ -121,7 +122,7 @@ int main()
     unsigned int cubemapTexture = loadCubemap(faces); 
 
     // Setup light manager and key callbacks for lights controls
-    LightManager lightManager(pointLights, spotLights, dirLights);
+    LightManager lightManager(pointLights, spotLights, dirLights, sun);
     glfwSetKeyCallback(window, key_callback);
     glfwSetWindowUserPointer(window, &lightManager);
 
@@ -131,6 +132,11 @@ int main()
 
     // Set shader in use
     shader.use();        
+
+	// Setup sun
+	shader.setVec3("sun.color",		sun.getColor());
+	shader.setVec3("sun.direction", sun.getDirection());
+	shader.setBool("sun.isOn",		sun.isOn());
 
     // Setup point lights
     PointLights::size_type pointLightsNumber = min(MAX_NUMBER_OF_POINT_LIGHTS, pointLights.size());   
@@ -206,6 +212,9 @@ int main()
 
             objects[i].getModel()->Draw(shader);
         }                
+
+		shader.setVec3("sun.direction", sun.getDirection());
+		shader.setVec3("sun.color",		sun.getColor());
 
         // Update point lights state
         for (PointLights::size_type i = 0; i < pointLights.size(); ++i)

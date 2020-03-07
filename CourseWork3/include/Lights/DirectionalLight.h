@@ -6,8 +6,8 @@
 class DirectionalLight : public Light
 {
 public:
-    DirectionalLight(glm::vec3 direction, glm::vec3 color)
-    	: Light(color)
+    DirectionalLight(glm::vec3 direction, glm::vec3 color, LightState state = LightState::On)
+    	: Light(color, state)
     	, _direction(direction)
     	{}
     
