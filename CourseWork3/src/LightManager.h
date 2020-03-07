@@ -3,8 +3,8 @@
 
 #include <vector>
 #include "Aliases.h"
-#include "PointLight.h"
-#include "SpotLight.h"
+#include <PointLight.h>
+#include <SpotLight.h>
 #include <GLFW/glfw3.h>
 
 enum class ActiveLightType 

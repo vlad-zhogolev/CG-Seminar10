@@ -1,9 +1,9 @@
 #ifndef SCENE_LOADER_H
 #define SCENE_LOADER_H
 
-#include "DirectionalLight.h"
-#include "PointLight.h"
-#include "SpotLight.h"
+#include <DirectionalLight.h>
+#include <PointLight.h>
+#include <SpotLight.h>
 #include "Model.h"
 #include "Object.h"
 #include "Aliases.h"

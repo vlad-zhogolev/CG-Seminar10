@@ -1,6 +1,6 @@
-#include "PointLight.h"
-#include "SpotLight.h"
-#include "DirectionalLight.h"
+#include <PointLight.h>
+#include <SpotLight.h>
+#include <DirectionalLight.h>
 #include "Model.h"
 #include "Object.h"
 
