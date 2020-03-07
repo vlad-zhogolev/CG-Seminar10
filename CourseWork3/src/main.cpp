@@ -121,7 +121,7 @@ int main()
     unsigned int cubemapTexture = loadCubemap(faces); 
 
     // Setup light manager and key callbacks for lights controls
-    LightManager lightManager(pointLights, spotLights);
+    LightManager lightManager(pointLights, spotLights, dirLights);
     glfwSetKeyCallback(window, key_callback);
     glfwSetWindowUserPointer(window, &lightManager);
 
@@ -208,18 +208,24 @@ int main()
         }                
 
         // Update point lights state
-		for (PointLights::size_type i = 0; i < pointLights.size(); ++i)
-		{
-			shader.setVec3("pointLights[" + to_string(i) + "].position",	pointLights[i].getPosition());
-			shader.setBool("pointLights[" + to_string(i) + "].isOn",		pointLights[i].isOn());
-		}
+        for (PointLights::size_type i = 0; i < pointLights.size(); ++i)
+        {
+            shader.setVec3("pointLights[" + to_string(i) + "].position",    pointLights[i].getPosition());
+            shader.setBool("pointLights[" + to_string(i) + "].isOn",        pointLights[i].isOn());
+        }
 
         // Update spot lights state
-		for (SpotLights::size_type i = 0; i < spotLights.size(); ++i)
-		{
-			shader.setVec3("spotLights[" + to_string(i) + "].position", spotLights[i].getPosition());
-			shader.setBool("spotLights[" + to_string(i) + "].isOn", spotLights[i].isOn());
-		}
+        for (SpotLights::size_type i = 0; i < spotLights.size(); ++i)
+        {
+            shader.setVec3("spotLights[" + to_string(i) + "].position", spotLights[i].getPosition());
+            shader.setBool("spotLights[" + to_string(i) + "].isOn",     spotLights[i].isOn());
+        }
+
+        // Update directional lights state
+        for (DirectionalLights::size_type i = 0; i < dirLights.size(); ++i)
+        {
+            shader.setBool("dirLights[" + to_string(i) + "].isOn",  dirLights[i].isOn());
+        }
         
         // Render lights on top of scene        
         shaderLightBox.use();            

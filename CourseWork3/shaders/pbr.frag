@@ -66,8 +66,8 @@ uniform int dirLightsNumber;
 uniform DirLight dirLights[MAX_DIR_LIGHTS_NUMBER];
 uniform int pointLightsNumber;
 uniform PointLight pointLights[MAX_POINT_LIGHTS_NUMBER];
-uniform int spotLightsNumber;
-uniform SpotLight spotLights[MAX_SPOT_LIGHTS_NUMBER];
+uniform int m_spotLightsNumber;
+uniform SpotLight m_spotLights[MAX_SPOT_LIGHTS_NUMBER];
 
 vec3 getNormalFromMap()
 {
@@ -242,11 +242,11 @@ void main()
             Lo += calcDirLight(dirLights[i], material, directionToView, F0);
         }
     }
-    for(int i = 0; i < spotLightsNumber; ++i)
+    for(int i = 0; i < m_spotLightsNumber; ++i)
     {
-        if (spotLights[i].isOn)
+        if (m_spotLights[i].isOn)
         {
-            Lo += calcSpotLight(spotLights[i], material, WorldPos, directionToView, F0);
+            Lo += calcSpotLight(m_spotLights[i], material, WorldPos, directionToView, F0);
         }
     }
 

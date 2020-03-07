@@ -29,7 +29,7 @@ public:
     SceneLoader() = default;
 
     void loadScene(std::string lightsDataPath, std::string modelsDataPath
-        , DirectionalLights& dirLights, PointLights& pointLights, SpotLights& spotLights
+        , DirectionalLights& dirLights, PointLights& pointLights, SpotLights& m_spotLights
         , Models& models, Objects& objects);
 
 private:
