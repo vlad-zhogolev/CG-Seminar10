@@ -51,10 +51,12 @@ void LightManager::switchLightType(ActiveLightType type)
 
 void LightManager::translateCurrentLight(Direction dir)
 {
-    if (activeType == ActiveLightType::NONE ||
-        (activeType == ActiveLightType::POINT && pointLights.size() == 0) ||
-        (activeType == ActiveLightType::SPOT && spotLights.size() == 0))
-        return;
+	if (activeType == ActiveLightType::NONE ||
+		(activeType == ActiveLightType::POINT && pointLights.size() == 0) ||
+		(activeType == ActiveLightType::SPOT && spotLights.size() == 0))
+	{
+		return;
+	}
     
     glm::vec3 delta;
     switch (dir)
@@ -80,37 +82,89 @@ void LightManager::translateCurrentLight(Direction dir)
     }
     delta *= movementSpeed * deltaTime;
 
-    if (activeType == ActiveLightType::POINT)
-        pointLights[curPointLight].setPosition(pointLights[curPointLight].getPosition() + delta);
-    else if (activeType == ActiveLightType::SPOT)
-        spotLights[curSpotLight].setPosition(spotLights[curSpotLight].getPosition() + delta);
+	if (activeType == ActiveLightType::POINT)
+	{
+		pointLights[curPointLight].setPosition(pointLights[curPointLight].getPosition() + delta);
+	}
+	else if (activeType == ActiveLightType::SPOT)
+	{
+		spotLights[curSpotLight].setPosition(spotLights[curSpotLight].getPosition() + delta);
+	}
+}
+
+void LightManager::switchLightState()
+{
+	if (activeType == ActiveLightType::NONE ||
+	   (activeType == ActiveLightType::POINT && pointLights.size() == 0) ||
+	   (activeType == ActiveLightType::SPOT && spotLights.size() == 0))
+	{
+		return;
+	}
+
+	if (activeType == ActiveLightType::POINT)
+	{
+		pointLights[curPointLight].switchState();
+	}
+	else if (activeType == ActiveLightType::SPOT)
+	{
+		spotLights[curSpotLight].switchState();
+	}
 }
 
 void LightManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     // lights control
-    if (key == GLFW_KEY_1 && action == GLFW_PRESS)
-        switchLightType(ActiveLightType::POINT);
-    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-        switchLightType(ActiveLightType::SPOT);
-    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-        switchToPrevious();
-    if (key == GLFW_KEY_RIGHT&& action == GLFW_PRESS)
-        switchToNext();
-    if (key == GLFW_KEY_U && action == GLFW_REPEAT)
-        translateCurrentLight(Direction::UP);
-    if (key == GLFW_KEY_O && action == GLFW_REPEAT)
-        translateCurrentLight(Direction::DOWN);
-    if (key == GLFW_KEY_I && action == GLFW_REPEAT)
-        translateCurrentLight(Direction::FRONT);
-    if (key == GLFW_KEY_K && action == GLFW_REPEAT)
-        translateCurrentLight(Direction::BACK);
-    if (key == GLFW_KEY_J && action == GLFW_REPEAT)
-        translateCurrentLight(Direction::LEFT);
-    if (key == GLFW_KEY_L && action == GLFW_REPEAT)
-        translateCurrentLight(Direction::RIGHT);
-    if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS)
-        movementSpeed = movementSpeed >= 10.0f ? 10.0f : movementSpeed + 1.0f;
-    if (key == GLFW_KEY_MINUS && action == GLFW_PRESS)
-        movementSpeed = movementSpeed <= 0.0f ? 0.0f : movementSpeed - 1.0f;
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+	{
+		switchLightType(ActiveLightType::POINT);
+	}
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+	{
+		switchLightType(ActiveLightType::SPOT);
+	}
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+	{
+		switchToPrevious();
+	}
+	if (key == GLFW_KEY_RIGHT&& action == GLFW_PRESS)
+	{
+		switchToNext();
+	}
+	if (key == GLFW_KEY_U && action == GLFW_REPEAT)
+	{
+		translateCurrentLight(Direction::UP);
+	}
+	if (key == GLFW_KEY_O && action == GLFW_REPEAT)
+	{
+		translateCurrentLight(Direction::DOWN);
+	}
+	if (key == GLFW_KEY_I && action == GLFW_REPEAT)
+	{
+		translateCurrentLight(Direction::FRONT);
+	}
+	if (key == GLFW_KEY_K && action == GLFW_REPEAT)
+	{
+		translateCurrentLight(Direction::BACK);
+	}
+	if (key == GLFW_KEY_J && action == GLFW_REPEAT)
+	{
+		translateCurrentLight(Direction::LEFT);
+	}
+	if (key == GLFW_KEY_L && action == GLFW_REPEAT)
+	{
+		translateCurrentLight(Direction::RIGHT);
+
+	}
+	if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS)
+	{
+		movementSpeed = movementSpeed >= 10.0f ? 10.0f : movementSpeed + 1.0f;
+	}
+	if (key == GLFW_KEY_MINUS && action == GLFW_PRESS)
+	{
+		movementSpeed = movementSpeed <= 0.0f ? 0.0f : movementSpeed - 1.0f;
+	}
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		switchLightState();
+	}
 }

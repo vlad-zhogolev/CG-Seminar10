@@ -37,6 +37,7 @@ public:
     void switchToPrevious();
     void switchLightType(ActiveLightType type);
     void translateCurrentLight(Direction dir);
+	void switchLightState();
     void setActiveLightType(ActiveLightType type) { this->activeType = type; }
     void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     void updateDeltaTime(float deltaTime) { this->deltaTime = deltaTime >= 0 ? deltaTime : 0; }

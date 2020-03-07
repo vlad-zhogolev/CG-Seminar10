@@ -137,11 +137,12 @@ int main()
     shader.setInt("pointLightsNumber", pointLightsNumber);   
     for (PointLights::size_type i = 0; i < pointLights.size(); ++i)
     {
-        shader.setVec3( "pointLights[" + to_string(i) + "].position", pointLights[i].getPosition());
-        shader.setVec3( "pointLights[" + to_string(i) + "].color", pointLights[i].getColor());        
-        shader.setFloat("pointLights[" + to_string(i) + "].constant", pointLights[i].getConstant());
-        shader.setFloat("pointLights[" + to_string(i) + "].linear", pointLights[i].getLinear());
-        shader.setFloat("pointLights[" + to_string(i) + "].quadratic", pointLights[i].getQuadratic());
+        shader.setVec3( "pointLights[" + to_string(i) + "].position",   pointLights[i].getPosition());
+        shader.setVec3( "pointLights[" + to_string(i) + "].color",      pointLights[i].getColor());        
+        shader.setFloat("pointLights[" + to_string(i) + "].constant",   pointLights[i].getConstant());
+        shader.setFloat("pointLights[" + to_string(i) + "].linear",     pointLights[i].getLinear());
+        shader.setFloat("pointLights[" + to_string(i) + "].quadratic",  pointLights[i].getQuadratic());
+        shader.setBool( "pointLights[" + to_string(i) + "].isOn",       pointLights[i].isOn());
     }    
     
     // Setup directional lights
@@ -149,8 +150,9 @@ int main()
     shader.setInt("dirLightsNumber", dirLightsNumber);
     for (DirectionalLights::size_type i = 0; i < dirLights.size(); ++i)
     {
-        shader.setVec3("dirLights[" + to_string(i) + "].color", dirLights[i].getColor());
-        shader.setVec3("dirLights[" + to_string(i) + "].direction", dirLights[i].getDirection());
+        shader.setVec3("dirLights[" + to_string(i) + "].color",         dirLights[i].getColor());
+        shader.setVec3("dirLights[" + to_string(i) + "].direction",     dirLights[i].getDirection());
+        shader.setBool("dirLights[" + to_string(i) + "].isOn",          dirLights[i].isOn());
     }
 
     // Setup spot lights
@@ -158,14 +160,15 @@ int main()
     shader.setInt("spotLightsNumber", spotLightsNumber);
     for(SpotLights::size_type i = 0; i < spotLights.size(); ++i)
     {        
-        shader.setVec3( "spotLights[" + to_string(i) + "].position", spotLights[i].getPosition());
-        shader.setVec3( "spotLights[" + to_string(i) + "].color", spotLights[i].getColor()); 
-        shader.setVec3( "spotLights[" + to_string(i) + "].direction", spotLights[i].getDirection());       
-        shader.setFloat("spotLights[" + to_string(i) + "].constant", spotLights[i].getConstant());
-        shader.setFloat("spotLights[" + to_string(i) + "].linear", spotLights[i].getLinear());
-        shader.setFloat("spotLights[" + to_string(i) + "].quadratic", spotLights[i].getQuadratic());
-        shader.setFloat("spotLights[" + to_string(i) + "].cutOff", glm::cos(spotLights[i].getCutOffInRadians()));
+        shader.setVec3( "spotLights[" + to_string(i) + "].position",    spotLights[i].getPosition());
+        shader.setVec3( "spotLights[" + to_string(i) + "].color",       spotLights[i].getColor()); 
+        shader.setVec3( "spotLights[" + to_string(i) + "].direction",   spotLights[i].getDirection());       
+        shader.setFloat("spotLights[" + to_string(i) + "].constant",    spotLights[i].getConstant());
+        shader.setFloat("spotLights[" + to_string(i) + "].linear",      spotLights[i].getLinear());
+        shader.setFloat("spotLights[" + to_string(i) + "].quadratic",   spotLights[i].getQuadratic());
+        shader.setFloat("spotLights[" + to_string(i) + "].cutOff",      glm::cos(spotLights[i].getCutOffInRadians()));
         shader.setFloat("spotLights[" + to_string(i) + "].outerCutOff", glm::cos(spotLights[i].getOuterCutOffInRadians()));
+        shader.setBool( "spotLights[" + to_string(i) + "].isOn",        spotLights[i].isOn());
     }    
 
     // Render loop    
@@ -204,13 +207,19 @@ int main()
             objects[i].getModel()->Draw(shader);
         }                
 
-        // Update point lights positions
-        for (PointLights::size_type i = 0; i < pointLights.size(); ++i)                              
-            shader.setVec3("pointLights[" + to_string(i) + "].position", pointLights[i].getPosition());                            
+        // Update point lights state
+		for (PointLights::size_type i = 0; i < pointLights.size(); ++i)
+		{
+			shader.setVec3("pointLights[" + to_string(i) + "].position",	pointLights[i].getPosition());
+			shader.setBool("pointLights[" + to_string(i) + "].isOn",		pointLights[i].isOn());
+		}
 
-        // Update spot lights positions
-        for (SpotLights::size_type i = 0; i < spotLights.size(); ++i)        
-            shader.setVec3("spotLights[" + to_string(i) + "].position", spotLights[i].getPosition());            
+        // Update spot lights state
+		for (SpotLights::size_type i = 0; i < spotLights.size(); ++i)
+		{
+			shader.setVec3("spotLights[" + to_string(i) + "].position", spotLights[i].getPosition());
+			shader.setBool("spotLights[" + to_string(i) + "].isOn", spotLights[i].isOn());
+		}
         
         // Render lights on top of scene        
         shaderLightBox.use();            

@@ -2,7 +2,8 @@
 
 struct PointLight {
     vec3 position;
-    vec3 color;   
+    vec3 color;  
+    bool isOn; 
 
     float constant;
     float linear;
@@ -12,12 +13,14 @@ struct PointLight {
 struct DirLight {
     vec3 direction;
     vec3 color;
+    bool isOn;
 };
 
 struct SpotLight{
     vec3 position;
     vec3 direction;
     vec3 color;
+    bool isOn;
 
     float constant;
     float linear;
@@ -225,17 +228,29 @@ void main()
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for(int i = 0; i < pointLightsNumber; ++i)     
-        Lo += calcPointLight(pointLights[i], material, WorldPos, directionToView, F0);  
-
+    for(int i = 0; i < pointLightsNumber; ++i)
+    {
+        if (pointLights[i].isOn)
+        {
+            Lo += calcPointLight(pointLights[i], material, WorldPos, directionToView, F0);   
+        }
+    }
     for(int i = 0; i < dirLightsNumber; ++i)
-        Lo += calcDirLight(dirLights[i], material, directionToView, F0);  
-    
+    {
+        if (dirLights[i].isOn)
+        {
+            Lo += calcDirLight(dirLights[i], material, directionToView, F0);
+        }
+    }
     for(int i = 0; i < spotLightsNumber; ++i)
-        Lo += calcSpotLight(spotLights[i], material, WorldPos, directionToView, F0);
+    {
+        if (spotLights[i].isOn)
+        {
+            Lo += calcSpotLight(spotLights[i], material, WorldPos, directionToView, F0);
+        }
+    }
 
     vec3 ambient = vec3(0.03) * material.albedo;
-
     vec3 color = ambient + Lo;
 
     vec3 reflected = reflect(-directionToView, material.normal);
