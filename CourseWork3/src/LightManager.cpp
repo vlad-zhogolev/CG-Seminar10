@@ -7,26 +7,35 @@ const glm::vec3 LightManager::LEFT  = glm::vec3(1, 0, 0);
 const glm::vec3 LightManager::UP    = glm::vec3(0, 1, 0);
 const glm::vec3 LightManager::FRONT = glm::vec3(0, 0, 1);
 const float LightManager::TIME_BETWEEN_SUN_STATES = 2.0f;
- std::map<TimeOfDay, SunState> LightManager::sunStates =
+
+glm::vec3 defaultColorProvider(glm::vec3 initial, glm::vec3 destination, float alpha)
+{
+	return glm::mix(initial, destination, alpha);
+}
+
+std::map<TimeOfDay, SunState> LightManager::sunStates =
 {
     {TimeOfDay::MORNING,{
         glm::vec3(0.98, 0.81, 0.30),
         glm::vec3(0.29, 0.26, 0.24), 
 		glm::vec3(-1, 0, 0),
         //glm::vec3(-1, -1, 0)
-		glm::vec3(0, 1, 0)
+		glm::vec3(0, 1, 0),
+		defaultColorProvider
     }},
     {TimeOfDay::MIDDAY,{
         glm::vec3(0.98, 0.831, 0.25),
         glm::vec3(0.98, 0.81, 0.30),
         glm::vec3(0, -1, 0),
-		glm::vec3(-1, 0, 0)
+		glm::vec3(-1, 0, 0),
+		defaultColorProvider
     }},
     {TimeOfDay::EVENING,{
-        glm::vec3(0.99, 0.7, 0.53),
+        glm::vec3(0.96, 0.27, 0.27),
         glm::vec3(0.98, 0.81, 0.30),
 		glm::vec3(1, 0, 0),
-        glm::vec3(0, -1, 0)
+        glm::vec3(0, -1, 0),
+		defaultColorProvider
     }},
     {TimeOfDay::NIGHT,{
         //glm::vec3(0.29, 0.26, 0.24),
@@ -34,7 +43,8 @@ const float LightManager::TIME_BETWEEN_SUN_STATES = 2.0f;
         glm::vec3(0.99, 0.7, 0.53),
 		//glm::vec3(-1, -1, 0),
 		glm::vec3(0, 1, 0),
-		glm::vec3(1, 0, 0)
+		glm::vec3(1, 0, 0),
+		defaultColorProvider
     }}
 };
 
@@ -280,11 +290,12 @@ void LightManager::update()
 		auto initialColor = sunStates[m_timeOfDay].initialColor;
 		auto destinationColor = sunStates[m_timeOfDay].destinationColor;
 
-        m_sun.setColor(glm::mix(
-            initialColor,
-            destinationColor,
-            timeSinceSunStateChange / TIME_BETWEEN_SUN_STATES
-        ));
+		m_sun.setColor(sunStates[m_timeOfDay].colorProvider(initialColor, destinationColor, timeSinceSunStateChange / TIME_BETWEEN_SUN_STATES));
+        //m_sun.setColor(glm::mix(
+        //    initialColor,
+        //    destinationColor,
+        //    timeSinceSunStateChange / TIME_BETWEEN_SUN_STATES
+        //));
 
 		auto initialDirection = sunStates[m_timeOfDay].initialDirection;
 		auto destinationDirection = sunStates[m_timeOfDay].destinationDirection;

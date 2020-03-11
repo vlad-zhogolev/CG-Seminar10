@@ -42,6 +42,8 @@ struct SunState
 
     glm::vec3 destinationDirection;
     glm::vec3 initialDirection;
+
+	glm::vec3(*colorProvider)(glm::vec3 initial, glm::vec3 destination, float alpha);
 };
 
 
