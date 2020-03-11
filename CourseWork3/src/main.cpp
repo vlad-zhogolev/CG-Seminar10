@@ -131,7 +131,7 @@ int main()
     glEnable(GL_CULL_FACE);           
 
     // Set shader in use
-    shader.use();        
+    shader.use();
 
 	// Setup sun
 	shader.setVec3("sun.color",		sun.getColor());
