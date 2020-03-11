@@ -6,13 +6,44 @@ float LightManager::movementSpeed = 5.0f;
 const glm::vec3 LightManager::LEFT  = glm::vec3(1, 0, 0);
 const glm::vec3 LightManager::UP    = glm::vec3(0, 1, 0);
 const glm::vec3 LightManager::FRONT = glm::vec3(0, 0, 1);
+const float LightManager::TIME_BETWEEN_SUN_STATES = 2.0f;
+ std::map<TimeOfDay, SunState> LightManager::sunStates =
+{
+    {TimeOfDay::MORNING,{
+        glm::vec3(0.98, 0.81, 0.30),
+        glm::vec3(0.29, 0.26, 0.24), 
+		glm::vec3(-1, 0, 0),
+        //glm::vec3(-1, -1, 0)
+		glm::vec3(0, 1, 0)
+    }},
+    {TimeOfDay::MIDDAY,{
+        glm::vec3(0.98, 0.831, 0.25),
+        glm::vec3(0.98, 0.81, 0.30),
+        glm::vec3(0, -1, 0),
+		glm::vec3(-1, 0, 0)
+    }},
+    {TimeOfDay::EVENING,{
+        glm::vec3(0.99, 0.7, 0.53),
+        glm::vec3(0.98, 0.81, 0.30),
+		glm::vec3(1, 0, 0),
+        glm::vec3(0, -1, 0)
+    }},
+    {TimeOfDay::NIGHT,{
+        //glm::vec3(0.29, 0.26, 0.24),
+		glm::vec3(0.0, 0.0, 0.0f),
+        glm::vec3(0.99, 0.7, 0.53),
+		//glm::vec3(-1, -1, 0),
+		glm::vec3(0, 1, 0),
+		glm::vec3(1, 0, 0)
+    }}
+};
 
 std::map<TimeOfDay, TimeOfDay> LightManager::nextTimeOfDay
 {
-	{ TimeOfDay::MORNING,	TimeOfDay::MIDDAY },
-	{ TimeOfDay::MIDDAY,	TimeOfDay::EVENING },
-	{ TimeOfDay::EVENING,	TimeOfDay::NIGHT },
-	{ TimeOfDay::NIGHT,		TimeOfDay::MORNING }
+    { TimeOfDay::MORNING,   TimeOfDay::MIDDAY },
+    { TimeOfDay::MIDDAY,    TimeOfDay::EVENING },
+    { TimeOfDay::EVENING,   TimeOfDay::NIGHT },
+    { TimeOfDay::NIGHT,     TimeOfDay::MORNING }
 };
 
 void LightManager::switchToNext()
@@ -161,10 +192,15 @@ void LightManager::switchLightState()
         {
             m_directionalLights[curDirectionalLight].switchState();
         }
-		case ActiveLightType::SUN:
-		{
-			switchTimeOfDay();
-		}
+		break;
+        case ActiveLightType::SUN:
+        {
+			if (timeSinceSunStateChange == TIME_BETWEEN_SUN_STATES)
+			{
+				m_timeOfDay = nextTimeOfDay[m_timeOfDay];
+				timeSinceSunStateChange = 0.0f;
+			}
+        }
         break;
     }
 }
@@ -184,10 +220,10 @@ void LightManager::key_callback(GLFWwindow* window, int key, int scancode, int a
     {
         switchLightType(ActiveLightType::DIRECTIONAL);
     }
-	if (key == GLFW_KEY_4 && action == GLFW_PRESS)
-	{
-		switchLightType(ActiveLightType::SUN);
-	}
+    if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+    {
+        switchLightType(ActiveLightType::SUN);
+    }
     if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
     {
         switchToPrevious();
@@ -234,35 +270,64 @@ void LightManager::key_callback(GLFWwindow* window, int key, int scancode, int a
     }
 }
 
+void LightManager::update()
+{
+    if (timeSinceSunStateChange < TIME_BETWEEN_SUN_STATES)
+    {
+        timeSinceSunStateChange += deltaTime;
+        timeSinceSunStateChange = glm::clamp(timeSinceSunStateChange, 0.0f, TIME_BETWEEN_SUN_STATES);
+
+		auto initialColor = sunStates[m_timeOfDay].initialColor;
+		auto destinationColor = sunStates[m_timeOfDay].destinationColor;
+
+        m_sun.setColor(glm::mix(
+            initialColor,
+            destinationColor,
+            timeSinceSunStateChange / TIME_BETWEEN_SUN_STATES
+        ));
+
+		auto initialDirection = sunStates[m_timeOfDay].initialDirection;
+		auto destinationDirection = sunStates[m_timeOfDay].destinationDirection;
+
+        m_sun.setDirection(glm::mix(
+            initialDirection,
+            destinationDirection,
+            timeSinceSunStateChange / TIME_BETWEEN_SUN_STATES
+        ));
+    }
+}
+
 void LightManager::switchTimeOfDay()
 {
-	m_timeOfDay = nextTimeOfDay[m_timeOfDay];
-	switch (m_timeOfDay)
-	{
-		case TimeOfDay::MORNING:
-		{
-			m_sun.setDirection(glm::vec3(-1, 0, 0));
-			m_sun.setColor(glm::vec3(0.98, 0.81, 0.30));
-		}
-		break;
-		case TimeOfDay::MIDDAY:
-		{
-			m_sun.setDirection(glm::vec3(0, -1, 0));
-			m_sun.setColor(glm::vec3(0.98, 0.831, 0.25));
-		}
-		break;
-		case TimeOfDay::EVENING:
-		{
-			m_sun.setDirection(glm::vec3(1, 0, 0));
-			m_sun.setColor(glm::vec3(0.99, 0.7, 0.53));
-		}
-		break;
-		case TimeOfDay::NIGHT:
-		{
-			// here sun is moon
-			m_sun.setDirection(glm::vec3(-1, -1, 0));
-			m_sun.setColor(glm::vec3(0.29, 0.26, 0.24));
-		}
-		break;
-	}
+    // m_timeOfDay = nextTimeOfDay[m_timeOfDay];
+    // switch (m_timeOfDay)
+    // {
+    //     case TimeOfDay::MORNING:
+    //     {
+    //         destinationColor = glm::vec3(0.98, 0.81, 0.30);
+    //         initialColor = glm::vec3();
+
+    //         destinationDirection = glm::vec3(-1, 0, 0);
+    //     }
+    //     break;
+    //     case TimeOfDay::MIDDAY:
+    //     {
+    //         m_sun.setDirection(glm::vec3(0, -1, 0));
+    //         m_sun.setColor(glm::vec3(0.98, 0.831, 0.25));
+    //     }
+    //     break;
+    //     case TimeOfDay::EVENING:
+    //     {
+    //         m_sun.setDirection(glm::vec3(1, 0, 0));
+    //         m_sun.setColor(glm::vec3(0.99, 0.7, 0.53));
+    //     }
+    //     break;
+    //     case TimeOfDay::NIGHT:
+    //     {
+    //         // here sun is moon
+    //         m_sun.setDirection(glm::vec3(-1, -1, 0));
+    //         m_sun.setColor(glm::vec3(0.29, 0.26, 0.24));
+    //     }
+    //     break;
+    // }
 }

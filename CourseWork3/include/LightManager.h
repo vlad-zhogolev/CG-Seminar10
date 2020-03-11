@@ -35,6 +35,15 @@ enum class TimeOfDay
 	NIGHT
 };
 
+struct SunState
+{
+    glm::vec3 destinationColor;
+    glm::vec3 initialColor;
+
+    glm::vec3 destinationDirection;
+    glm::vec3 initialDirection;
+};
+
 
 
 class LightManager 
@@ -60,6 +69,9 @@ public:
     void setActiveLightType(ActiveLightType type) { this->activeType = type; }
     void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     void updateDeltaTime(float deltaTime) { this->deltaTime = deltaTime >= 0 ? deltaTime : 0; }
+    void update();
+    glm::vec3 getSunDirection() { return currentDirection; }
+    glm::vec3 getSunColor() { return currentColor; }
 
 private:
 	void switchTimeOfDay();
@@ -78,6 +90,20 @@ private:
 
     ActiveLightType activeType = ActiveLightType::NONE;
     float deltaTime = 0;
+
+    // Sun related variables
+    glm::vec3 destinationColor;
+    glm::vec3 currentColor;
+    glm::vec3 initialColor;
+
+    glm::vec3 destinationDirection;
+    glm::vec3 currentDirection;
+    glm::vec3 initialDirection;
+
+    float timeSinceSunStateChange = 0.0f;
+
+    const static float TIME_BETWEEN_SUN_STATES;
+     static std::map<TimeOfDay, SunState> sunStates;
 };
 
 #endif // !LIGHT_MANAGER_H

@@ -185,6 +185,7 @@ int main()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         lightManager.updateDeltaTime(deltaTime);
+        lightManager.update();
 
         // Render        
         glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
